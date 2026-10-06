@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Meta、Google、LINE LAP 廣告素材規格與單張 Excel 進稿表。">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'self' data: blob:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Ad Spec Studio｜廣告素材進稿表</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css?v=triple-assets-16">
+  <script src="specs.js?v=triple-assets-16" defer></script><script src="jszip.min.js" defer></script><script src="xlsx-export.js?v=triple-assets-16" defer></script><script src="ad-examples.js?v=triple-assets-16" defer></script><script src="app.js?v=triple-assets-16" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="index.html"><span class="brand-icon">A</span><span>AD SPEC <strong>STUDIO</strong></span></a><span class="local-label">Excel 在你的瀏覽器產生</span></header>
+  <main>
+    <div class="intro"><div><p class="eyebrow">CREATIVE SUBMISSION</p><h1>廣告素材進稿表</h1><p class="lede">選擇廣告格式，下載完整進稿表，交給客戶填寫。</p></div><div class="check-date">官方規格查核 <strong id="checkedDate"></strong><span id="scheduleText"></span></div></div>
+    <div class="workspace">
+      <aside class="selector-panel"><p class="step"><span>01</span> 選擇平台與格式</p><div class="platforms" role="group" aria-label="廣告平台"><button data-platform="Meta" class="active" aria-pressed="true">Meta</button><button data-platform="Google" aria-pressed="false">Google</button><button data-platform="LINE LAP" aria-pressed="false">LINE LAP</button></div><div id="formatList" class="format-list"></div><p class="aside-note">第一版涵蓋常用格式。Meta 依品牌認知版位，LINE 以網站導流為主。</p></aside>
+      <section class="work-panel"><div class="format-heading"><div><p class="eyebrow" id="formatPlatform"></p><h2 id="formatName"></h2></div><span id="category" class="category"></span></div>
+        <div class="export-selection"><button id="selectFormat" class="primary">加入目前格式</button><div id="selectedFormats" aria-label="已選取的匯出格式"></div></div><div class="download-bar"><div><strong>下載進稿表單</strong><p id="downloadHint"></p><small>每個頁簽左側提供三組素材填寫欄，右側附廣告預覽圖。每個格式的需求、規格與來源放在同一頁簽，多格式共用一個檔案。</small></div><button class="primary" id="downloadTemplate">下載 Excel 進稿表單</button></div>
+        <div class="section-divider"><h3>完整規格與來源</h3></div><div id="specContent"></div>
+      </section>
+    </div>
+    <footer><span id="versionText"></span><span>表單在你的瀏覽器產生；文案與素材資訊直接填入 Excel。</span></footer>
+  </main><div id="toast" class="toast" role="status" hidden></div>
+</body></html>
