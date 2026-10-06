@@ -23,10 +23,11 @@
     return z.generateAsync({type:'uint8array',compression:'DEFLATE'});
   }
   function buildTemplate(spec,catalog){
+    if(spec.ytIndependent)return [buildYouTube(spec,catalog)];
     const rows=[['區塊','填寫項目','需求','規格與填寫說明','客戶填寫（淡黃色）','補充／確認備註']],editable=[],sections=[],validations=[];
     function add(section,item,required,description,note='',input=false){rows.push([section,item,required,description,'',note]);if(input)editable.push(rows.length);}
     function section(title){rows.push([title,'','','','','']);sections.push(rows.length);}
-    section(spec.platform+' '+spec.name+' 進稿表');
+    section(spec.platform+' '+spec.name+' 進稿表');if(spec.copyProfileLabel)add('活動方式','適用活動','說明',spec.copyProfileLabel,spec.copyProfileNote);
     add('使用說明','如何完成','說明','每組素材填一欄，請填淡黃色欄位；附檔名或下載連結。','本表為交付整理用途，非後台直接匯入檔。');
     add('基本資料','專案／活動名稱','交付必填','填寫本次活動名稱。','',true);
     add('基本資料','素材名稱','交付必填','每欄填寫一組素材，共三組。','',true);
@@ -35,7 +36,7 @@
     add('基本資料','最終／登陸頁面網址','網站導流必填','完整 http:// 或 https:// 網址。','• 請確認網址有效、產品已上架。\n• 建議加上 UTM 追蹤參數。',true);
     if(spec.id!=='google-rsa'){
       const options=spec.platform==='Meta'?['瞭解詳情','立即購買','立即註冊','聯絡我們','取得報價','下載','預約時間','立即訂購','依後台選擇']:spec.id==='google-rda'?['系統自動選擇']:['瞭解更多','立即購買','立即註冊','聯絡我們','下載','依後台選擇'];
-      add('基本資料','CTA 按鈕','依活動設定',spec.id==='google-rda'?'系統自動選擇。':'下拉選單'+(spec.fields.some(f=>f.id==='cta')?'；CTA 文案最多 10 計數單位。':'。'),spec.id==='google-rda'?'RDA 官方規格由系統自動選擇。':spec.platform==='Meta'?'可用按鈕依目標及後台確認；其他需求請寫交付備註。':'交付需求選項；正式按鈕文字及可用性依後台確認。',true);
+      add('基本資料','CTA 按鈕','依活動設定',spec.id==='google-rda'?'系統自動選擇。':'下拉選單'+(spec.fields.some(f=>f.id==='cta')?'；CTA 文案最多 10 半形字元額度（純中文保守建議 5 字；依後台）。':'。'),spec.id==='google-rda'?'RDA 官方規格由系統自動選擇。':spec.platform==='Meta'?'可用按鈕依目標及後台確認；其他需求請寫交付備註。':'交付需求選項；正式按鈕文字及可用性依後台確認。',true);
       validations.push({cell:'E'+rows.length,options});
     }
     section('素材交付');
@@ -46,7 +47,7 @@
       'google-rsa':{rules:['純文字廣告，不需圖片或影片。'],notes:['標題、說明可能重新組合，請讓每則文案都能獨立閱讀。']},
       'google-rda':{rules:['橫圖：1200×628 px（最低 600×314）；1–15 張。','方圖：建議 1200×1200 px（最低 300×300）；1–15 張。','圖片／Logo：每張 ≤5120 KB。','選填 Logo：方形 1200×1200；橫式 1200×300 px，各 1–5 張。','選填影片：YouTube 連結；1–5 支；建議 30 秒。'],notes:['方圖採較高解析度製作建議；官方格式頁亦列 600×600。','圖片避免畫上假的可點擊按鈕。','影片及 Logo 可不提供。']},
       'google-skippable':{rules:['影片：建議 1920×1080／1080×1920／1080×1080 px。','長度：一般競價未設上限；預訂型 12 秒–6 分鐘。','建議 15–20 秒；YouTube 上傳檔案 ≤256 GB。','選填隨播橫幅：300×60 px；JPG／PNG／GIF；≤150 KB。'],notes:['提供公開或不公開 YouTube 連結，不能設為私人影片。','內容及音樂須有使用授權。','不同活動設定的字數需求可能不同，投放前請複核。']},
-      'google-bumper':{rules:['影片：5–6 秒；最長 6 秒。','建議 1920×1080／1080×1920／1080×1080 px。','YouTube 上傳檔案 ≤256 GB。','選填隨播橫幅：300×60 px；JPG／PNG／GIF；≤150 KB。'],notes:['提供公開或不公開 YouTube 連結。','5 秒為官方總覽列出的最短長度，實際依活動設定。','內容及音樂須有使用授權。']},
+      'google-bumper':{rules:['影片：最長 6 秒；建議製作 5–6 秒。','建議 1920×1080／1080×1920／1080×1080 px。','YouTube 上傳檔案 ≤256 GB。','選填隨播橫幅：300×60 px；JPG／PNG／GIF；≤150 KB。'],notes:['提供公開或不公開 YouTube 連結。','5–6 秒為製作建議，非所有活動的硬性最短限制。','內容及音樂須有使用授權。']},
       'google-infeed':{rules:['影片：建議 1920×1080／1080×1920／1080×1080 px。','格式頁未限長度；建議 15–20 秒；YouTube 檔案 ≤256 GB。'],notes:['提供公開或不公開 YouTube 連結。','標題建議簡短，部分裝置可能截斷。','內容及音樂須有使用授權。']},
       'line-image':{rules:['JPG／PNG；每張 ≤10 MB。'],notes:['三個尺寸全部必交，屬本表交付需求。','600×400 小圖片投放資格，由投放人員確認。']},
       'line-video':{rules:['MP4／MOV；每支 ≤1 GB；5–600 秒。','建議製作：橫式 1920×1080／方形 1080×1080／直式 1080×1920 px。'],notes:['直式重點區域建議 888×1344（1080×1920）；方形建議 972×972（1080×1080）。','直式影片部分畫面會裁切，重要文字置中。','內容及音樂須有使用授權。']},
@@ -55,7 +56,7 @@
     };
     if(spec.ratios){
       spec.ratios.forEach(r=>add('素材版本',r.ratio+' 素材','建議交齊',r.size+'\n'+r.placement,r.ratio==='1:1'?'方形為製作建議。':'',true));
-      add('素材交付','檔案規格','依素材類型',bullet(['圖片：JPG／PNG；每張 ≤30 MB。','影片：MP4／MOV；每支 ≤4 GB；1 秒–15 分鐘。']), '各比例填檔名或下載連結；影片請註明秒數。');
+      add('素材交付','檔案規格','依素材類型',bullet(['圖片：JPG／PNG；每張 ≤30 MB。','影片：MP4／MOV；每支 ≤4 GB。','共用 Reels：1 秒–15 分鐘；其他版位上限另列於網頁。']), '各比例填檔名或下載連結；影片請註明秒數。');
       add('素材交付','重要提醒','參考','',bullet(['9:16：頂端 14%、底部 35%、左右各 6% 不放重要文字與標誌。','各尺寸請重排主體與文字，避免裁切。','影片建議加字幕，音樂及內容須有授權。','Reels 請勿使用 GIF、變臉／相機特效或商品標籤。']));
     }else{
       if(spec.requiredSizes){spec.requiredSizes.forEach(size=>add('素材版本',size+' 圖片','必交',size+' px','填檔名或下載連結。',true));}
@@ -67,17 +68,17 @@
       if(summary.notes.length)add('素材交付','重要提醒','參考','',bullet(summary.notes));
     }
     section('文案填寫');
-    add('文字計數','計數方式','說明',spec.counting==='google'?'中文／全形算 2，半形英數／空白算 1。':'全形、半形、空白均算 1 字。','字數不會自動計算；特殊符號請由投放人員確認。');
+    add('文字計數','計數方式','說明',spec.counting==='google'?'中文／全形算 2，半形英數／空白算 1。':'全形、半形、空白各算 1 字元；emoji 與特殊符號請另核對。','字數不會自動計算；特殊符號請由投放人員確認。');
     function fields(list,group='文案',slotRequired=true){list.filter(f=>f.id!=='cta').forEach(f=>{for(let i=0;i<f.max;i++){
       const shared=spec.placements?.flatMap(p=>p.fields.filter(x=>x.id===f.id).map(x=>x.limit));
       const limit=shared?.length?Math.min(...shared):f.limit;
       const req=f.requirement||(!slotRequired&&f.required?'加卡時必填':slotRequired&&f.required&&i<Math.max(1,f.min)?'必填':f.mode==='recommendation'?'建議填寫':'選填');
-      const metaCopy=spec.unifiedMeta&&f.id==='primary'?'• 圖片建議：125 字元\n• 影片建議：44 字元':null;
-      const desc=metaCopy||bullet([(f.mode==='recommendation'?'建議 ':'最多 ')+(limit??'未設定')+' '+(spec.counting==='google'?'計數單位':'字元'),...(f.max>1&&i===0?['填 '+f.min+'–'+f.max+' 則。']:[]),...(f.id==='labels'&&i===0?['最多 3 個，合計最多 17 字。']:[])]);
-      add(group,f.label+(f.max>1?' '+(i+1):''),req,desc,f.mode==='recommendation'?'超出可能截斷。':f.id==='smallDescription'?'用於 600×400 小圖片。':'',true);
+      const metaCopy=spec.unifiedMeta&&f.id==='primary'?'• 圖片建議：125 字元\n• 影片建議：44 字元\n• 全形／半形／空白各算 1':null;
+      const desc=metaCopy||bullet([(f.mode==='recommendation'||f.mode==='delivery'?'建議 ':'最多 ')+catalog.textLimit(spec,limit),...(f.max>1&&i===0?['填 '+f.min+'–'+f.max+' 則。']:[]),...(f.id==='labels'&&i===0?['最多 3 個，合計最多 17 字。']:[])]);
+      add(group,f.label+(f.max>1?' '+(i+1):''),req,desc,f.mode==='recommendation'?'超出可能截斷。':f.id==='smallDescription'?'35 字為本表交付需求；不是官方獨立上限。':'',true);
     }});}
     fields(spec.fields);
-    if(spec.unifiedMeta)add('文案','說明','選擇填寫','• 製作建議 27 字元','依活動與後台確認是否使用。',true);
+    if(spec.unifiedMeta)add('文案','說明','選擇填寫','• 製作建議 27 字元\n• 全形／半形／空白各算 1','依活動與後台確認是否使用。',true);
     if(spec.cards){section('輪播圖卡（'+spec.cards.min+'–'+spec.cards.max+' 張）');for(let i=1;i<=spec.cards.max;i++){
       add('圖卡 '+i,'檔名／素材下載連結',i<=spec.cards.min?'必填':'加卡時必填','素材檔名或下載連結。','選填圖卡未使用時留白。',true);
       fields(spec.cards.fields,'圖卡 '+i,i<=spec.cards.min);
@@ -85,13 +86,13 @@
     }}
     add('交付備註','其他需求','選填','填寫字幕、授權、排程或其他交付事項。','',true);
     section('官方來源與查核');
-    add('查核','查核日期','參考',spec.checked,'查核日期不是官方發佈日期。');
+    add('查核','查核日期','參考',spec.checked,'已核對公開官方文件；查核日期不是官方發佈日期。');
     const sharedSources={Meta:{label:'Meta Ads Guide',url:'https://www.facebook.com/business/ads-guide/'},Google:{label:'Google Ads Help',url:'https://support.google.com/google-ads/'},'LINE LAP':{label:'LINE LAP 官方下載頁',url:'https://tw.linebiz.com/download/line-ads-platform/'}};
     const shared=sharedSources[spec.platform];
     add('來源',shared.label,'官方入口',shared.url,'詳細文件與版位來源可在網頁查閱。');
     add('使用範圍','素材確認','說明','由投放人員確認平台規格與審核。');
     // Match the supplied client template without modifying the reference file.
-    const omitted=new Set(['專案／活動名稱','素材名稱','素材類型','預計投放日期','其他需求','重要提醒','計數方式']);
+    const omitted=new Set(['專案／活動名稱','素材名稱','預計投放日期','其他需求','重要提醒','計數方式']);
     const clean=rows.filter(r=>!omitted.has(r[1]));
     const assetNote=rows.find(r=>r[1]==='重要提醒')?.[5]||'';
     const assetRows=clean.filter(r=>r[0]==='素材版本');
@@ -101,7 +102,12 @@
     if(assetTarget)assetTarget[5]=[assetTarget[5],assetNote].filter(Boolean).join('\n');
     const copyRows=clean.filter(r=>r[0]==='文案');
     if(spec.unifiedMeta){copyRows.sort((a,b)=>['主要文字','標題','說明'].indexOf(a[1])-['主要文字','標題','說明'].indexOf(b[1]));const start=clean.findIndex(r=>r[0]==='文案');clean.splice(start,copyRows.length,...copyRows);}
-    if(copyRows.length){copyRows.forEach(r=>r[5]='');copyRows[0][5]=(spec.counting==='google'?'中文／全形算 2，半形英數／空白算 1。':'全形、半形、空白均算 1 字。')+'\n'+(spec.platform==='Meta'?'超出建議長度可能隱藏並顯示「查看更多」。':'請依各欄字數上限填寫。')+(spec.id==='line-image'?'\n35 字說明用於 600×400 小圖片。':'')+(['google-skippable','google-bumper'].includes(spec.id)?'\n• 多格式 VRC：長標題、說明必填。\n• 單一串流／Bumper：不一律要求長標題及說明。\n• VVC／Demand Gen 請依活動後台確認，不能只交 CTA 短標題。':'');}
+    if(copyRows.length){
+      copyRows.forEach(r=>r[5]='');
+      copyRows[0][5]=(spec.counting==='google'?(spec.id==='google-rsa'?'RSA：中文／全形算 2，半形英數／空白算 1。':'半形英數／空白算 1；中文／全形按 2 為本表保守估算。混合文字合計；實際計數依後台。'):'全形、半形、空白各算 1 字元；emoji 與特殊符號請另核對。')+'\n'+(spec.platform==='Meta'?'超出建議長度可能截斷；44 字為含 Reels 的共用影片建議。':'請依各欄規格填寫。');
+      if(spec.copyProfileNote)copyRows[0][5]+='\n'+spec.copyProfileNote;
+      const small=copyRows.find(r=>r[1]==='小圖片短版說明');if(small)small[5]='35 字是本表指定交付需求。\n官方一般說明上限為 75 字（全形／半形均算 1）。';
+    }
     clean.find(r=>r[1]==='如何完成')[5]='';
     const newEditable=clean.map((r,i)=>editable.includes(rows.indexOf(r)+1)?i+1:0).filter(Boolean);
     const newSections=clean.map((r,i)=>sections.includes(rows.indexOf(r)+1)?i+1:0).filter(Boolean);
@@ -118,7 +124,26 @@
     });
     const tripleValidations=newValidations.flatMap(v=>['D','E','F'].map(c=>({...v,cell:c+v.cell.slice(1)})));
     const names={'meta-creative':'Meta 圖片影片','meta-carousel':'Meta 輪播','google-rsa':'Google 搜尋 RSA','google-rda':'Google 多媒體 RDA','google-skippable':'Google 可略過影片','google-bumper':'Google 串場影片','google-infeed':'Google 動態內影片','line-image':'LAP 圖片','line-video':'LAP 影片','line-small-video':'LAP 小影片','line-carousel':'LAP 輪播'};
-    return [{name:names[spec.id],rows:displayRows,widths:[27,52,46,30,30,30,3,48,48,48],editable:newEditable,sections:newSections,validations:tripleValidations,merges,editableCols:[3,4,5]}];
+    const suffix={'single':'單一','vrc':'VRC','dv360':'DV360','demand-gen':'Demand Gen','standalone':'格式'};
+    return [{name:names[spec.id]+(spec.copyProfileId?' '+suffix[spec.copyProfileId]:''),rows:displayRows,widths:[27,52,46,30,30,30,3,48,48,48],editable:newEditable,sections:newSections,validations:tripleValidations,merges,editableCols:[3,4,5]}];
+  }
+  function buildYouTube(spec,catalog){
+    const rows=[['進稿項目','規格／填寫說明','補充備註','素材 1','素材 2','素材 3']],editable=[],sections=[],validations=[];
+    const add=(label,value,note='',input=false)=>{rows.push([label,value,note,'','','']);if(input)editable.push(rows.length);};
+    const section=title=>{rows.push([title,'','','','','']);sections.push(rows.length);};
+    section(spec.name+' 進稿表');add('填寫方式','每组素材填一欄；附檔名或下載連結。','淡黄色欄位由客戶填寫。');
+    add('Landing URL（必要）','完整 https:// 網址。','確認網址有效／產品已上架，建議加上 UTM。',true);
+    section(spec.sections[0]);
+    add('YouTube 影片連結（必要）',spec.rules.map(r=>r.label+'：'+r.value).join('\n'),'公開或不公開；不能設私人影片。',true);
+    section(spec.sections[1]);
+    for(const f of spec.fields)for(let n=1;n<=(f.max||1);n++){
+      add(f.label+(f.max>1?' '+n:'')+'（'+(f.requirement||(f.required?'必要':'選填'))+'）',f.limit==null?'依後台 CTA 選項':catalog.textLimit(spec,f.limit),f.note||'',true);
+      if(f.id==='cta')for(const column of ['D','E','F'])validations.push({cell:column+rows.length,options:['瞭解更多','立即購買','立即註冊','下載','聯絡我們','依後台選擇']});
+    }
+    section(spec.sections[2]);for(const v of spec.visual)add(v.label+'（'+(v.label.includes('差異')||v.label==='文字顯示'?'參考':'選填')+'）',v.value,'',!v.label.includes('差異')&&v.label!=='文字顯示'&& !v.value.includes('不另交')&&!v.value.includes('不將'));
+    section(spec.sections[3]);add('校稿與提醒','逐項確認右側注意事項。',spec.notes.map(n=>'• '+n).join('\n'));
+    section('官方來源與查核');add('查核日期',spec.checked);add('官方共用來源',spec.source+'\nhttps://support.google.com/google-ads/answer/13547298','活動有特殊設定時，依本格式注意事項及後台確認。');
+    return {name:spec.name.replace('YouTube｜','YT ').slice(0,31),rows,widths:[27,52,46,30,30,30,3,48,48,48],editable,sections,validations,merges:[],editableCols:[3,4,5],freezeRow:2};
   }
   function withPreview(sheet,image){
     const displayWidth=1000,displayHeight=displayWidth*image.height/image.width;
