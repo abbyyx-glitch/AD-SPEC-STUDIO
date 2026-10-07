@@ -12,7 +12,7 @@
     $('formatList').innerHTML=catalog.formats.filter(f=>f.platform===platform).map(f=>`<button class="format-button ${f.id===formatId?'active':''}" data-format="${f.id}" aria-pressed="${f.id===formatId}"><span class="format-symbol">${{圖片:'IMG',影片:'VID','圖片／影片':'MIX',輪播:'CAR',文字:'TXT'}[f.category]}</span><span>${esc(f.name)}</span></button>`).join('');
     $('formatPlatform').textContent=s.platform+' / '+s.category;
     $('formatName').textContent=s.name;$('category').textContent=s.category;
-    $('downloadHint').textContent=selected.size?`已選 ${selected.size} 個格式，匯出同一檔案、各自一個頁簽。`:'可直接下載目前格式，或加入多個格式一起匯出。';$('selectFormat').textContent=selected.has(formatId)?'移除目前格式':'加入目前格式';$('selectedFormats').innerHTML=catalog.formats.filter(f=>selected.has(f.id)).map(f=>`<button class="selected-chip" data-remove="${f.id}" aria-label="移除 ${esc(f.platform+' '+f.name)}">${esc(f.platform+' '+f.name+(selectedSpecs.get(f.id)?.copyProfileLabel?' · '+selectedSpecs.get(f.id).copyProfileLabel:''))} ×</button>`).join('');renderSpecs();simplifyYouTube();
+    $('downloadHint').textContent=selected.size?`已選 ${selected.size} 個格式，匯出同一檔案、各自一個頁簽。`:'可直接下載目前格式，或加入多個格式一起匯出。';$('selectFormat').textContent=selected.has(formatId)?'移除目前格式':'加入目前格式';$('selectedFormats').innerHTML=catalog.formats.filter(f=>selected.has(f.id)).map(f=>`<button class="selected-chip" data-remove="${f.id}" aria-label="移除 ${esc(f.platform+' '+f.name)}">${esc(f.platform+' '+f.name+(selectedSpecs.get(f.id)?.copyProfileLabel?' · '+selectedSpecs.get(f.id).copyProfileLabel:''))} ×</button>`).join('');renderSpecs();simplifyYouTube();window.dispatchEvent(new Event('ad-selection-change'));
   }
   function simplifyYouTube(){
     const s=getSpec();if(s.ytIndependent){
@@ -31,14 +31,16 @@
       const formats=selected.size?catalog.formats.filter(f=>selected.has(f.id)).map(f=>selectedSpecs.get(f.id)||catalog.resolveSpec(f.id)):[getSpec()];
       const sheets=[];
       for(const [i,f] of formats.entries()){button.textContent=`正在加入預覽圖 ${i+1}/${formats.length}…`;const sheet=AdExcel.buildTemplate(f,catalog)[0];sheets.push(AdExcel.withPreview(sheet,await AdExamples.toImage(f.id)));}
+      if(button.id==='downloadCombined')sheets.push(window.SpecSummary.buildSheet(formats));
       const bytes=await AdExcel.makeWorkbook(sheets);
       const url=URL.createObjectURL(new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
-      const a=document.createElement('a');a.href=url;a.download=`廣告素材進稿表_${formats.length>1?'多媒體':formats[0].platform}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
-      $('toast').textContent='已下載進稿表；每個格式各一頁簽，請填淡黃色欄位。';
+      const a=document.createElement('a');a.href=url;a.download=`${button.id==='downloadCombined'?'廣告素材進稿表與規格總表':'廣告素材進稿表'}_${formats.length>1?'多媒體':formats[0].platform}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+      $('toast').textContent=button.id==='downloadCombined'?'已下載同一個 Excel：包含進稿表各頁簽與一張規格總表。':'已下載進稿表；每個格式各一頁簽，請填淡黃色欄位。';
     }catch(error){$('toast').textContent='表單產生失敗，請確認網頁檔案完整。';console.error(error);}
     finally{button.disabled=false;button.textContent=label;$('toast').hidden=false;clearTimeout(timer);timer=setTimeout(()=>$('toast').hidden=true,5000);}
   }
-  document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.platform){platform=b.dataset.platform;formatId=catalog.formats.find(f=>f.platform===platform).id;render();}else if(b.dataset.format){formatId=b.dataset.format;render();}else if(b.id==='selectFormat'){if(selected.has(formatId)){selected.delete(formatId);selectedSpecs.delete(formatId);}else{selected.add(formatId);selectedSpecs.set(formatId,getSpec());}render();}else if(b.dataset.remove){selected.delete(b.dataset.remove);selectedSpecs.delete(b.dataset.remove);render();}else if(b.id==='downloadTemplate')download(b);});
+  document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.platform){platform=b.dataset.platform;formatId=catalog.formats.find(f=>f.platform===platform).id;render();}else if(b.dataset.format){formatId=b.dataset.format;render();}else if(b.id==='selectFormat'){if(selected.has(formatId)){selected.delete(formatId);selectedSpecs.delete(formatId);}else{selected.add(formatId);selectedSpecs.set(formatId,getSpec());}render();}else if(b.dataset.remove){selected.delete(b.dataset.remove);selectedSpecs.delete(b.dataset.remove);render();}else if(b.id==='downloadTemplate'||b.id==='downloadCombined')download(b);});
+  window.AdSelection={getFormats:()=>selected.size?catalog.formats.filter(f=>selected.has(f.id)).map(f=>selectedSpecs.get(f.id)||catalog.resolveSpec(f.id)):[getSpec()],hasSelected:()=>selected.size>0};
   $('checkedDate').textContent=catalog.checked;$('scheduleText').textContent=catalog.schedule.text;
   $('versionText').textContent='規格版本 '+catalog.version+' · '+catalog.formats.length+' 種常用格式';render();
 })();

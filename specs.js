@@ -10,11 +10,11 @@ window.AD_SPECS = (() => {
   const base = (id,platform,name,category,source,fields,rules,notes=[],extra={}) => ({id,platform,name,category,checked,source,fields,rules,notes,counting:platform==='Google'?'google':'unicode',...extra});
   const mf = [field('primary','主要文字',150,'recommendation',false,1,1,'官方建議 50–150 個字元'),field('headline','標題',27,'recommendation')];
   const codec = 'H.264；正方形像素；固定影格率；漸進式掃描；立體聲 AAC ≥128 kbps';
-  const safe = '安全區域建議：頂端 14%、底部 35%、左右各 6% 不放文字、標誌或重要元素。';
+  const safe = '9:16 Reels 安全區域建議：頂端 14%、底部 35%、左右各 6% 不放文字、標誌或重要元素。';
   const metaNote = '採官方「品牌認知」目標頁；不同目標、版位與裝置的欄位顯示可能不同。文字長度為建議，超過可能截斷顯示，並非一律拒登。';
   const lvFields = [field('headline','標題',20,'hard',true),field('description','說明',75,'hard',true)];
   const lapExtra = {version:'Media Guide 260930／2026-09 操作手冊',sourceMore:[{label:'LINE 官方建立廣告說明',url:'https://help2.line.me/admanager_tw/win/?contentId=20016923&lang=zh-Hant'},{label:'官方下載頁（查找最新版本）',url:'https://tw.linebiz.com/download/line-ads-platform/'},{label:'2026-09 操作手冊',url:manual},{label:'廣告刊登規範',url:'https://tw.linebiz.com/terms-and-policies/ads-policies/'}]};
-  const lapNotes = ['此版進稿表以網站導流、一般 LAP 廣告為範圍；應用程式、加好友、DPA 規格需另行查核。','點擊連結網址若有填寫，會取代登陸頁面網址用於遞送；錯誤時不會自動回退。','CTA 請從實際廣告後台可用選項選擇。'];
+  const lapNotes = ['此版進稿表以網站導流、一般 LAP 廣告為範圍；應用程式、加好友、DPA 規格需另行查核。','CTA 請從實際廣告後台可用選項選擇。'];
   const videoRules = [rule('檔案格式','MP4／MOV'),rule('編碼','H.264 Main／High Profile；正方形像素；固定影格率；漸進式掃描'),rule('音訊','AAC；建議 ≥128 kbps；單聲道或立體聲','建議'),rule('影格率／位元率','最高 30 fps／8 Mbps'),rule('影片長度','5–600 秒'),rule('檔案大小','最大 1 GB'),rule('解析度','最高 1080p；遞送最高 720p')];
   const youtubeRules = [rule('建議解析度','橫式 1920×1080；直式 1080×1920；方形 1080×1080','建議'),rule('HD 最低解析度','橫式 1280×720；直式 720×1280；方形 480×480'),rule('可接受 SD','640×480／480×640／480×480；不建議 SD','可接受'),rule('比例','16:9／9:16／1:1；另接受 SD 4:3／2:3'),rule('檔案格式','建議 MPG；可接受 MP4、MOV、WMV、AVI、FLV、MPEG-1、MPEGPS、3GPP、WebM、DNxHR、ProRes、CineForm、HEVC'),rule('檔案大小','≤256 GB（YouTube 上傳限制）'),rule('影片連結','YouTube 公開或不公開影片；不接受私人影片')];
   const ytNotes = ['影片須先在 YouTube 上架；本工具只填寫連結，不會上傳影片。','影片廣告文案欄位會依活動子類型改變，請比對後台；本格式採個別廣告格式官方頁。','Google 加權計數：中日韓及全形字元以 2 單位估算、半形英數及空白以 1 單位；特殊符號與 emoji 仍需後台複核。'];
@@ -34,7 +34,7 @@ window.AD_SPECS = (() => {
     base('google-infeed','Google','YouTube｜動態內影片廣告','影片',google(6227733),[field('headline','標題',100,'hard',true),field('descriptions','說明行',35,'hard',false,0,2)],[...youtubeRules,rule('影片長度','格式頁：任何長度；部分活動子類型另有最低長度'),rule('建議長度','認知 15–20 秒；考慮 2–3 分鐘','建議'),rule('縮圖','可選影片產生的 4 張縮圖；自訂縮圖使用 YouTube Studio')],[...ytNotes,'標題主文列最大 100 字，但同頁規格表建議 2 行、每行 40 字；>25 字部分裝置可能截斷。說明最多 2 行、每行 35 字，桌機觀看頁與 TV 不顯示。'],{videoUrl:true}),
     base('line-image','LINE LAP','一般圖片｜橫式／方形','圖片',lap,lvFields,[rule('尺寸','1200×628 或 1080×1080 px'),rule('檔案格式','JPG／PNG'),rule('檔案大小','≤10 MB'),rule('文案','標題 20 字；說明 75 字；半形全形均算 1 字')],lapNotes,lapExtra),
     base('line-small','LINE LAP','小圖片｜600×400','圖片',lap,lvFields,[rule('尺寸','600×400 px（亦可依後台使用其他小圖片尺寸）'),rule('檔案格式','JPG／PNG'),rule('檔案大小','≤10 MB'),rule('文案','標題 20 字；說明 75 字；半形全形均算 1 字')],[...lapNotes,'小圖片可投版位與產業資格不同；請依最新版 Media Guide 版位表及後台可用選項確認。'],lapExtra),
-    base('line-video','LINE LAP','一般影片｜橫式／方形／直式','影片',lap,lvFields,[...videoRules,rule('16:9 尺寸範圍','寬 240–1920；高 135–1080 px'),rule('1:1 尺寸範圍','600×600–1280×1280 px'),rule('9:16 尺寸範圍','寬 135–1080；高 240–1920 px')],[...lapNotes,'直式影片在 VOOM 追蹤中可能以 3:4 裁切，全螢幕才顯示 9:16。','安全範圍：1080×1920 的重點區域建議 888×1344；1080×1080 建議 972×972。'],lapExtra),
+    base('line-video','LINE LAP','一般影片｜橫式／方形／直式','影片',lap,lvFields,[...videoRules,rule('16:9 尺寸範圍','寬 240–1920；高 135–1080 px'),rule('1:1 尺寸範圍','600×600–1280×1280 px'),rule('9:16 尺寸範圍','寬 135–1080；高 240–1920 px')],[...lapNotes,'直式影片在 VOOM 追蹤中可能以 3:4 裁切，全螢幕才顯示 9:16。','LINE 影片 Safe Zone：1080×1920 直式的重點區域為 888×1344 px；1080×1080 方形為 972×972 px。重要文字與 Logo 依官方安全區圖放置；官方未列上下左右固定留白，請勿自行均分。'],lapExtra),
     base('line-small-video','LINE LAP','小影片｜橫式／方形','影片',lap,lvFields,[...videoRules,rule('比例','16:9／1:1；不支援 9:16'),rule('16:9 尺寸範圍','寬 240–1920；高 135–1080 px'),rule('1:1 尺寸範圍','600×600–1280×1280 px')],[...lapNotes,'小影片支援版位與一般影片不同；依 Media Guide 版位表及後台為準。'],lapExtra),
     base('line-carousel','LINE LAP','輪播｜2–10 張方形圖片','輪播',manual,[],[rule('圖卡數量','2–10 張'),rule('每張尺寸','1080×1080 px'),rule('檔案格式／大小','JPG／PNG；每張 ≤10 MB'),rule('每卡文案','標題 20 字；說明 75 字'),rule('廣告目標','不適用加好友；DPA 需另外使用產品摘要')],[...lapNotes,'輪播每張圖卡都需通過審核才會遞送。'],{...lapExtra,cards:{min:2,max:10,fields:[field('headline','圖卡標題',20,'hard',true),field('description','圖卡說明',75,'hard',true)]}})
   ];
@@ -50,7 +50,7 @@ window.AD_SPECS = (() => {
     target.name=g.name;
     target.ratios=[
       {ratio:'1:1',size:'1440×1440 px',placement:'方形動態消息素材',note:'工具製作建議：由 1440 px 寬度製作方形版本；非官方所有版位的統一最佳尺寸。'},
-      {ratio:'9:16',size:'1440×2560 px',placement:g.id==='meta-fb-image'?'Instagram Stories':'Instagram Stories／Reels',note:'官方直式版位尺寸建議；關鍵文字與標誌需避開安全區域。'},
+      {ratio:'9:16',size:'1440×2560 px',placement:g.id==='meta-fb-image'?'Instagram Stories':'Instagram Stories／Reels',note:'9:16 共用保守製作建議：頂端留白 14%、底部 35%、左右各 6%；Reels 有免責文字時底部建議留白 40%。Stories 仍須依版位預覽確認。'},
       {ratio:'4:5',size:'1440×1800 px',placement:'Facebook／Instagram 動態消息',note:'官方動態消息尺寸建議；保留較多垂直畫面。'}
     ];
     target.sourceMore=target.placements.slice(1).map(f=>({label:f.name+' 官方規格',url:f.source}));
@@ -67,9 +67,9 @@ window.AD_SPECS = (() => {
     ratios:image.ratios.map(r=>({...r,placement:r.ratio==='9:16'?'圖片：Stories；影片：Stories／Reels':r.placement}))};
   const lapImage=formats.find(f=>f.id==='line-image');
   lapImage.fields=[field('headline','標題',20,'hard',true),{...field('smallDescription','小圖片短版說明',35,'delivery',true,1,1,'35 字為本表指定的短版交付需求；官方一般說明上限為 75 字，未另列 35 字小圖片硬性上限。'),requirement:'本表交付必填'},field('description','一般圖片說明',75,'hard',true)];
-  lapImage.name='圖片｜三尺寸';lapImage.requiredSizes=['1080×1080','1200×628','600×400'];
-  lapImage.rules=[rule('交付尺寸','1080×1080、1200×628、600×400 px；三款尺寸都需交付','交付必填'),rule('檔案格式','JPG／PNG'),rule('檔案大小','每張 ≤10 MB')];
-  lapImage.notes=[...lapImage.notes,'三種尺寸全部交付為本進稿表的交付需求，不代表平台要求單一廣告同時上傳三種尺寸。','600×400 為小圖片格式，可投版位與產業資格請由投放人員確認。'];
+  lapImage.name='圖片｜三尺寸';lapImage.requiredSizes=['1080×1080','1200×628'];lapImage.recommendedSizes=['600×400'];
+  lapImage.rules=[rule('交付尺寸','必要：1080×1080、1200×628 px；建議提供：600×400 px','交付必填'),rule('檔案格式','JPG／PNG'),rule('檔案大小','每張 ≤10 MB')];
+  lapImage.notes=[...lapImage.notes,'1080×1080、1200×628 為本表必要交付；600×400 建議提供，依可投版位使用。','600×400 為小圖片格式，可投版位與產業資格請由投放人員確認。'];
   const visibleFormats=[combined,...formats.filter(f=>!groupedIds.has(f.id)&&!['meta-fb-image','meta-fb-video','line-small'].includes(f.id))];
 
   // Campaign-specific copy replaces the mixed legacy list; preview format stays unchanged.

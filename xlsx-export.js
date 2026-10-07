@@ -49,8 +49,8 @@
       'google-skippable':{rules:['影片：建議 1920×1080／1080×1920／1080×1080 px。','長度：一般競價未設上限；預訂型 12 秒–6 分鐘。','建議 15–20 秒；YouTube 上傳檔案 ≤256 GB。','選填隨播橫幅：300×60 px；JPG／PNG／GIF；≤150 KB。'],notes:['提供公開或不公開 YouTube 連結，不能設為私人影片。','內容及音樂須有使用授權。','不同活動設定的字數需求可能不同，投放前請複核。']},
       'google-bumper':{rules:['影片：最長 6 秒；建議製作 5–6 秒。','建議 1920×1080／1080×1920／1080×1080 px。','YouTube 上傳檔案 ≤256 GB。','選填隨播橫幅：300×60 px；JPG／PNG／GIF；≤150 KB。'],notes:['提供公開或不公開 YouTube 連結。','5–6 秒為製作建議，非所有活動的硬性最短限制。','內容及音樂須有使用授權。']},
       'google-infeed':{rules:['影片：建議 1920×1080／1080×1920／1080×1080 px。','格式頁未限長度；建議 15–20 秒；YouTube 檔案 ≤256 GB。'],notes:['提供公開或不公開 YouTube 連結。','標題建議簡短，部分裝置可能截斷。','內容及音樂須有使用授權。']},
-      'line-image':{rules:['JPG／PNG；每張 ≤10 MB。'],notes:['三個尺寸全部必交，屬本表交付需求。','600×400 小圖片投放資格，由投放人員確認。']},
-      'line-video':{rules:['MP4／MOV；每支 ≤1 GB；5–600 秒。','建議製作：橫式 1920×1080／方形 1080×1080／直式 1080×1920 px。'],notes:['直式重點區域建議 888×1344（1080×1920）；方形建議 972×972（1080×1080）。','直式影片部分畫面會裁切，重要文字置中。','內容及音樂須有使用授權。']},
+      'line-image':{rules:['JPG／PNG；每張 ≤10 MB。'],notes:['1080×1080、1200×628 必交；600×400 建議提供。','600×400 小圖片投放資格，由投放人員確認。']},
+      'line-video':{rules:['MP4／MOV；每支 ≤1 GB；5–600 秒。','建議製作：橫式 1920×1080／方形 1080×1080／直式 1080×1920 px。'],notes:['LINE 影片安全區：直式 1080×1920 內 888×1344；方形 1080×1080 內 972×972 px。依官方安全區圖定位，未公布固定邊距。','直式影片部分畫面會裁切，重要文字置中。','內容及音樂須有使用授權。']},
       'line-small-video':{rules:['MP4／MOV；每支 ≤1 GB；5–600 秒。','僅橫式 16:9 或方形 1:1，不收直式 9:16。','建議製作：1920×1080 或 1080×1080 px。'],notes:['內容及音樂須有使用授權。']},
       'line-carousel':{rules:['2–10 張圖卡；每張 1080×1080 px。','JPG／PNG；每張 ≤10 MB。'],notes:['每張圖卡請填文案、素材與連結。','全部圖卡通過審核後才會投放。']}
     };
@@ -60,8 +60,9 @@
       add('素材交付','重要提醒','參考','',bullet(['9:16：頂端 14%、底部 35%、左右各 6% 不放重要文字與標誌。','各尺寸請重排主體與文字，避免裁切。','影片建議加字幕，音樂及內容須有授權。','Reels 請勿使用 GIF、變臉／相機特效或商品標籤。']));
     }else{
       if(spec.requiredSizes){spec.requiredSizes.forEach(size=>add('素材版本',size+' 圖片','必交',size+' px','填檔名或下載連結。',true));}
-      else if(spec.videoUrl)add('影片','YouTube 影片網址','必填','YouTube 影片連結。','設定為公開或不公開。',true);
-      else if(!spec.cards&&spec.category!=='文字')add('素材','檔名／下載連結','必填','素材檔名或下載連結。','多個素材請分行填寫；影片請註明秒數。',true);
+      if(spec.recommendedSizes)spec.recommendedSizes.forEach(size=>add('素材版本',size+' 圖片','建議提供',size+' px','依可投版位使用。',true));
+      if(!spec.requiredSizes&&spec.videoUrl)add('影片','YouTube 影片網址','必填','YouTube 影片連結。','設定為公開或不公開。',true);
+      else if(!spec.requiredSizes&&!spec.cards&&spec.category!=='文字')add('素材','檔名／下載連結','必填','素材檔名或下載連結。','多個素材請分行填寫；影片請註明秒數。',true);
       const summary=summaries[spec.id];
       if(!summary)throw new Error('Missing customer summary: '+spec.id);
       add('素材交付','素材規格','規格',bullet(summary.rules));
@@ -82,7 +83,7 @@
     if(spec.cards){section('輪播圖卡（'+spec.cards.min+'–'+spec.cards.max+' 張）');for(let i=1;i<=spec.cards.max;i++){
       add('圖卡 '+i,'檔名／素材下載連結',i<=spec.cards.min?'必填':'加卡時必填','素材檔名或下載連結。','選填圖卡未使用時留白。',true);
       fields(spec.cards.fields,'圖卡 '+i,i<=spec.cards.min);
-      add('圖卡 '+i,'連結網址',i<=spec.cards.min?'必填':'加卡時必填','填寫此圖卡完整網址。','',true);
+      if(spec.platform!=='LINE LAP')add('圖卡 '+i,'連結網址',i<=spec.cards.min?'必填':'加卡時必填','填寫此圖卡完整網址。','',true);
     }}
     add('交付備註','其他需求','選填','填寫字幕、授權、排程或其他交付事項。','',true);
     section('官方來源與查核');
@@ -140,7 +141,7 @@
       add(f.label+(f.max>1?' '+n:'')+'（'+(f.requirement||(f.required?'必要':'選填'))+'）',f.limit==null?'依後台 CTA 選項':catalog.textLimit(spec,f.limit),f.note||'',true);
       if(f.id==='cta')for(const column of ['D','E','F'])validations.push({cell:column+rows.length,options:['瞭解更多','立即購買','立即註冊','下載','聯絡我們','依後台選擇']});
     }
-    section(spec.sections[2]);for(const v of spec.visual)add(v.label+'（'+(v.label.includes('差異')||v.label==='文字顯示'?'參考':'選填')+'）',v.value,'',!v.label.includes('差異')&&v.label!=='文字顯示'&& !v.value.includes('不另交')&&!v.value.includes('不將'));
+    section(spec.sections[2]);for(const v of spec.visual)add(v.label+(v.label.includes('建議提供')?'':'（'+(v.label.includes('差異')||v.label==='文字顯示'?'參考':'選填')+'）'),v.value,'',!v.label.includes('差異')&&v.label!=='文字顯示'&& !v.value.includes('不另交')&&!v.value.includes('不將'));
     section(spec.sections[3]);add('校稿與提醒','逐項確認右側注意事項。',spec.notes.map(n=>'• '+n).join('\n'));
     section('官方來源與查核');add('查核日期',spec.checked);add('官方共用來源',spec.source+'\nhttps://support.google.com/google-ads/answer/13547298','活動有特殊設定時，依本格式注意事項及後台確認。');
     return {name:spec.name.replace('YouTube｜','YT ').slice(0,31),rows,widths:[27,52,46,30,30,30,3,48,48,48],editable,sections,validations,merges:[],editableCols:[3,4,5],freezeRow:2};
